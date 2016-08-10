@@ -551,7 +551,14 @@ public final class Actions {
      * @return the new Action1 instance
      */
     public static <T> Action1<T> toAction1(Action0 action) {
-        return new Action1CallsAction0<T>(action);
+        return new Action1CallsAction0<T>(action); // 为什么不用下面这种方式了?
+    	/* return new Action1<T>() {
+
+			@Override
+			public void call(T t) {
+				action.call();
+			}
+		}; */
     }
     
     static final class Action1CallsAction0<T> implements Action1<T> {

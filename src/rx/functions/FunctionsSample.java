@@ -1,12 +1,21 @@
 package rx.functions;
 
+//Func 是有参数有返回值 Action 是有参数没有返回值的 ( 当然也可以有0个参数 )
 public class FunctionsSample {
 
 	/**
-	 * Func1 - Func9  ��ʾ����T�ĸ����� T�ǲ��� R�Ƿ���
+	 * Func1 - Func9
 	 */
 	public static void main(String[] args) {
 
+		Func0<Integer> func0 = new Func0<Integer>() {
+			
+			@Override
+			public Integer call() {
+				return 0;
+			}
+		};
+		
 		Func1<String, Integer> func1 = new Func1<String, Integer>() {
 
 			@Override
@@ -79,7 +88,10 @@ public class FunctionsSample {
 			}
 		};
 		
-		FuncN<Integer> funcn = Functions.fromFunc(func1);
+		FuncN<Integer> funcn = Functions.fromFunc(func0);
+		System.out.println(funcn.call());
+		
+		funcn = Functions.fromFunc(func1);
 		System.out.println(funcn.call("1"));
 
 		funcn = Functions.fromFunc(func2);
@@ -104,16 +116,74 @@ public class FunctionsSample {
 		System.out.println(funcn.call("1", "1", "1", "1", "1", "1", "1", "1"));
 		
 		funcn = Functions.fromFunc(func9);
-		System.out.println(funcn.call("1", "1", "1", "1", "1", "1", "1", "1", "1"));
+		System.out.println("==" + func9.call("1", "1", "1", "1", "1", "1", "1", "1", "1")); // 和单单调用func9是一样的
+		System.out.println(funcn.call("1", "1", "1", "1", "1", "1", "1", "1", "1")); // 这里也是调用的func9
 		
-		// �൱��һ��������࣬ʵ�ʵ��õĻ���Func1 - Func9
-		new FuncN<Integer>() {
+		//
+		System.out.println("---");
+		int a = new FuncN<Integer>() {
 
+			Func1<String, Integer> func1 = new Func1<String, Integer>() {
+				
+				@Override
+				public Integer call(String t) {
+					return Integer.parseInt(t);
+				}
+			};
+			
 			@Override
 			public Integer call(Object... args) {
-				return null;
+				return func1.call((String) args[0]);
 			}
-		};
+		}.call("1");
+		
+		System.out.println(a);
+		
+		// Functions 类是一个代理类 拥有了可变参数，然后再去调用具体的 Func1 - Func9
+		
+		// Action
+		System.out.println("action");
+		Functions.fromAction(new Action0() {
+			
+			@Override
+			public void call() {
+				System.out.println("action0");
+			}
+		}).call();
+		
+		Functions.fromAction(new Action1<String>() {
 
+			@Override
+			public void call(String t) {
+				System.out.println(t);
+			}
+		}).call("1");
+		
+		Functions.fromAction(new Action2<String, String>() {
+
+			@Override
+			public void call(String t, String t2) {
+				System.out.println(t + " " + t2);
+			}
+		}).call("1", "2");
+		
+		Functions.fromAction(new Action3<String, String, String>() {
+
+			@Override
+			public void call(String t, String t2, String t3) {
+				System.out.println(t + " " + t2 + " " + t3);
+			}
+		}).call("1", "2", "3");
+		
+		// 真是太神奇了 面向接口编程真是太神奇了
+		System.out.println("测试");
+		int b = Functions.fromFunc(Actions.toFunc(new Action1<String>() {
+
+			@Override
+			public void call(String t) {
+				System.out.println("call string : " + t);
+			}
+		}, 1)).call("1");
+		System.out.println(b);
 	}
 }
